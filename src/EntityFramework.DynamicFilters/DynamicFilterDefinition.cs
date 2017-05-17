@@ -31,13 +31,16 @@ namespace EntityFramework.DynamicFilters
 
         public string AttributeName { get { return string.Concat(DynamicFilterConstants.ATTRIBUTE_NAME_PREFIX, DynamicFilterConstants.DELIMETER, CLRType.Name, DynamicFilterConstants.DELIMETER, FilterName); } }
 
-        internal DynamicFilterDefinition(Guid id, string filterName, LambdaExpression predicate, string columnName, Type clrType)
+        public bool FilterNavigationProperties { get; set; }
+
+        internal DynamicFilterDefinition(Guid id, string filterName, LambdaExpression predicate, string columnName, Type clrType, bool filterNavigationProperties = true)
         {
             ID = id;
             FilterName = filterName;
             Predicate = predicate;
             ColumnName = columnName;
             CLRType = clrType;
+            FilterNavigationProperties = filterNavigationProperties;
         }
 
         #region Filter Name mapping

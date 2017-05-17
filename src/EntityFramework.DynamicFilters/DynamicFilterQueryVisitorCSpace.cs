@@ -62,7 +62,6 @@ namespace EntityFramework.DynamicFilters
                 scanFilterList = FindFiltersForEntitySet(scanExp.Target.ElementType.MetadataProperties);
             var ofTypeFilterList = FindFiltersForEntitySet(expression.OfType.EdmType.MetadataProperties);
             var filtersToApply = ofTypeFilterList.Where(f => (scanFilterList == null) || !scanFilterList.Any(f2 => f2.ID == f.ID));
-
             var baseResult = base.Visit(expression);
 
             if (filtersToApply.Any())
@@ -119,6 +118,7 @@ namespace EntityFramework.DynamicFilters
             System.Diagnostics.Debug.Print("Visit(DbPropertyExpression): EdmType.Name={0}", expression.ResultType.ModelTypeUsage.EdmType.Name);
 #endif
             var baseResult = base.Visit(expression);
+            //return baseResult;
 
             var basePropertyResult = baseResult as DbPropertyExpression;
             if (basePropertyResult == null)
@@ -131,6 +131,12 @@ namespace EntityFramework.DynamicFilters
 
                 var containers = _ObjectContext.MetadataWorkspace.GetItems<EntityContainer>(DataSpace.CSpace).First();
                 var filterList = FindFiltersForEntitySet(targetEntityType.MetadataProperties);
+
+                if (navProp.DeclaringType != null)
+                {
+                    var parentFilters = FindFiltersForEntitySet(navProp.DeclaringType.MetadataProperties);
+                    filterList = filterList.Where(f => f.FilterNavigationProperties || !parentFilters.Any(pf => f.FilterName == pf.FilterName));
+                }
 
                 if (filterList.Any())
                 {
